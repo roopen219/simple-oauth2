@@ -2,7 +2,6 @@
 
 [![NPM Package Version](https://img.shields.io/npm/v/simple-oauth2.svg?style=flat-square)](https://www.npmjs.com/package/simple-oauth2)
 [![Build Status](https://github.com/lelylan/simple-oauth2/workflows/Node.js%20CI/badge.svg)](https://github.com/lelylan/simple-oauth2/actions)
-[![Dependency Status](https://img.shields.io/david/lelylan/simple-oauth2.svg?style=flat-square)](https://david-dm.org/lelylan/simple-oauth2)
 
 [Simple OAuth2](#simple-oauth2) is a Node.js client library for the [OAuth 2.0](http://oauth.net/2/) authorization framework. [OAuth 2.0](http://oauth.net/2/) is the industry-standard protocol for authorization, enabling third-party applications to obtain limited access to an HTTP service, either on behalf of a resource owner or by allowing the third-party application to obtain access on its own behalf.
 
@@ -11,26 +10,23 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
-- [Simple OAuth2](#simple-oauth2)
-  - [Table of Contents](#table-of-contents)
-  - [Requirements](#requirements)
-  - [Usage](#usage)
-    - [Supported Grant Types](#supported-grant-types)
-      - [Authorization Code Grant](#authorization-code-grant)
-      - [Resource Owner Password Credentials Grant](#resource-owner-password-credentials-grant)
-      - [Client Credentials Grant](#client-credentials-grant)
-    - [Access Token](#access-token)
-      - [Refresh an access token](#refresh-an-access-token)
-      - [Revoke an access or refresh token](#revoke-an-access-or-refresh-token)
-    - [Errors](#errors)
-  - [Debugging the module](#debugging-the-module)
-  - [Contributing](#contributing)
-  - [Authors](#authors)
-    - [Contributors](#contributors)
-  - [Changelog](#changelog)
-  - [License](#license)
-  - [Thanks to Open Source](#thanks-to-open-source)
+- [Requirements](#requirements)
+- [Usage](#usage)
+  - [Supported Grant Types](#supported-grant-types)
+    - [Authorization Code Grant](#authorization-code-grant)
+    - [Resource Owner Password Credentials Grant](#resource-owner-password-credentials-grant)
+    - [Client Credentials Grant](#client-credentials-grant)
+  - [Access Token](#access-token)
+    - [Refresh an access token](#refresh-an-access-token)
+    - [Revoke an access or refresh token](#revoke-an-access-or-refresh-token)
+  - [Errors](#errors)
+- [Debugging the module](#debugging-the-module)
+- [Contributing](#contributing)
+- [Authors](#authors)
+  - [Contributors](#contributors)
+- [Changelog](#changelog)
+- [License](#license)
+- [Thanks to Open Source](#thanks-to-open-source)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -38,8 +34,8 @@
 
 | Version                                                                          | Node support        |
 |----------------------------------------------------------------------------------|---------------------|
-| [4.x](https://github.com/lelylan/simple-oauth2/tree/4.x)                         | Node 12.x or higher |
-| [5.x (Development)](https://github.com/lelylan/simple-oauth2/tree/master)        | Node 14.x or higher |
+| [5.x](https://github.com/lelylan/simple-oauth2/tree/5.x)                         | Node 14.x or higher |
+| [6.x (Development)](https://github.com/lelylan/simple-oauth2/tree/master)        | Node 16.x or higher |
 
 Older node versions are unsupported.
 
