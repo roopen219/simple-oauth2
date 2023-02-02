@@ -189,12 +189,11 @@ export class KekaApiCode<ClientIdName extends string = "client_id"> {
    * Requests and returns an access token from the authorization server
    *
    * @param params
-   * @param params.code Authorization code received by the callback URL
-   * @param params.redirectURI String representing the registered application URI where the user is redirected after authentication
+   * @param params.api_key Api Key
    * @param [params.scope] String or array of strings representing the application privileges
    * @param [httpOptions] Optional http options passed through the underlying http library
    */
-  getToken(params: AuthorizationTokenConfig, httpOptions?: WreckHttpOptions): Promise<AccessToken>;
+  getToken(params: KekaTokenConfig, httpOptions?: WreckHttpOptions): Promise<AccessToken>;
 
   /**
    * Creates a new access token by providing a token object as specified by RFC6750.
@@ -208,6 +207,13 @@ export interface AuthorizationTokenConfig {
   code: string;
   /** String representing the registered application URI where the user is redirected after authentication */
   redirect_uri: string;
+  /** String or array of strings representing the application privileges */
+  scope?: string | string[] | undefined;
+}
+
+export interface KekaTokenConfig {
+  /** API Key */
+  api_key: string;
   /** String or array of strings representing the application privileges */
   scope?: string | string[] | undefined;
 }
