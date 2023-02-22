@@ -39,13 +39,13 @@ export interface ModuleOptions<ClientIdName extends string = "client_id"> {
   http?: {} | undefined;
   options?: {
     /** Format of data sent in the request body. Defaults to form. */
-    bodyFormat?: "json" | "form" | undefined;
+    bodyFormat?: "json" | "form" | "qs" | undefined;
     /**
      * Indicates the method used to send the client.id/client.secret authorization params at the token request.
      * If set to body, the bodyFormat option will be used to format the credentials.
      * Defaults to header
      */
-    authorizationMethod?: "header" | "body" | undefined;
+    authorizationMethod?: "header" | "body" | "qs" | undefined;
   } | undefined;
 }
 
