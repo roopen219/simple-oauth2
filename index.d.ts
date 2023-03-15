@@ -134,6 +134,7 @@ export class AuthorizationCode<ClientIdName extends string = "client_id"> {
       redirect_uri?: string | undefined;
       scope?: string | string[] | undefined;
       state?: string | undefined;
+      [key: string]: any;
     },
   ): string;
 
