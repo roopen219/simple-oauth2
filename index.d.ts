@@ -147,7 +147,7 @@ export class AuthorizationCode<ClientIdName extends string = "client_id"> {
    * @param [params.scope] String or array of strings representing the application privileges
    * @param [httpOptions] Optional http options passed through the underlying http library
    */
-  getToken(params: AuthorizationTokenConfig, httpOptions?: WreckHttpOptions): Promise<AccessToken>;
+  getToken(params: AuthorizationTokenConfig, httpOptions?: WreckHttpOptions, tokenExpiryDuration?: string): Promise<AccessToken>;
 
   /**
    * Creates a new access token by providing a token object as specified by RFC6750.
