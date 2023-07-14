@@ -278,8 +278,9 @@ export class ClientCredentials<ClientIdName extends string = "client_id"> {
    * @param params
    * @param [params.scope] A String or array of strings representing the application privileges
    * @param [httpOptions] Optional http options passed through the underlying http library
+   * @param [tokenExpiryDuration] Optional token expiry duration
    */
-  getToken(params: ClientCredentialTokenConfig, httpOptions?: WreckHttpOptions): Promise<AccessToken>;
+  getToken(params: ClientCredentialTokenConfig, httpOptions?: WreckHttpOptions, tokenExpiryDuration?: string): Promise<AccessToken>;
 
   /**
    * Creates a new access token by providing a token object as specified by RFC6750.
