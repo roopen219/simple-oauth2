@@ -49,6 +49,8 @@
     "debug": "4.3.4",
     "deepmerge": "4.2.2",
     "joi": "17.7.0",
+    "luxon": "3.5.0",
+    "p-retry": "6.2.0",
     "qs": "6.11.0"
   },
   "devDependencies": {
