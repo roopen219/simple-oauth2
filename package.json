@@ -1,8 +1,9 @@
 {
   "name": "simple-oauth2",
   "version": "5.0.0",
+  "type": "module",
   "support": true,
-  "description": "Node.js client for OAuth2",
+  "description": "Node.js client for OAuth2 (ESM, Node 18+)",
   "author": "Andrea Reginato <andrea.reginato@gmail.com>",
   "contributors": [
     "Jonathan Samines <jn.samines@gmail.com>"
@@ -18,7 +19,7 @@
     "url": "https://github.com/lelylan/simple-oauth2"
   },
   "engine": {
-    "node": ">=14"
+    "node": ">=18"
   },
   "scripts": {
     "pretest": "npm run lint",

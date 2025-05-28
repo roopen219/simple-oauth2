@@ -1,16 +1,16 @@
-'use strict';
+"use strict";
 
-const Hoek = require('@hapi/hoek');
-const Joi = require('joi');
-const { AuthorizationCodeSchema } = require('../lib/config');
+import Hoek from "@hapi/hoek";
+import Joi from "joi";
+import { AuthorizationCodeSchema } from "../lib/config.js";
 
 const baseConfig = {
   client: {
-    id: 'the client id',
-    secret: 'the client secret',
+    id: "the client id",
+    secret: "the client secret",
   },
   auth: {
-    tokenHost: 'https://authorization-server.org',
+    tokenHost: "https://authorization-server.org",
   },
 };
 
@@ -22,7 +22,4 @@ function createModuleConfigWithDefaults(config = {}) {
   return Joi.attempt(createModuleConfig(config), AuthorizationCodeSchema); // any grant type schema works here
 }
 
-module.exports = {
-  createModuleConfig,
-  createModuleConfigWithDefaults,
-};
+export { createModuleConfig, createModuleConfigWithDefaults };

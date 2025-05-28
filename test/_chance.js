@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const BaseChance = require('chance');
-const accessTokenMixin = require('chance-access-token');
+import BaseChance from "chance";
+import accessTokenMixin from "chance-access-token";
 
 class Chance extends BaseChance {
   constructor(...args) {
@@ -11,4 +11,4 @@ class Chance extends BaseChance {
   }
 }
 
-module.exports = Chance;
+export default Chance;

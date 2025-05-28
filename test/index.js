@@ -1,20 +1,20 @@
-'use strict';
+"use strict";
 
-const test = require('ava');
+import test from "ava";
 
-const { ResourceOwnerPassword, ClientCredentials, AuthorizationCode } = require('../index');
-const { createModuleConfig } = require('./_module-config');
+import { ResourceOwnerPassword, ClientCredentials, AuthorizationCode } from "../index.js";
+import { createModuleConfig } from "./_module-config.js";
 
-test('@constructor => throws a validation error when no configuration is provided', (t) => {
+test("@constructor => throws a validation error when no configuration is provided", (t) => {
   t.throws(() => new ResourceOwnerPassword());
   t.throws(() => new ClientCredentials());
   t.throws(() => new AuthorizationCode());
 });
 
-test('@constructor => throws a validation error when http.baseUrl is provided', (t) => {
+test("@constructor => throws a validation error when http.baseUrl is provided", (t) => {
   const options = createModuleConfig({
     http: {
-      baseUrl: '',
+      baseUrl: "",
     },
   });
 
@@ -27,7 +27,7 @@ test('@constructor => throws a validation error when http.baseUrl is provided', 
   t.throws(() => new AuthorizationCode(options), expected);
 });
 
-test('@constructor => creates a new instance with the minimal required configuration', (t) => {
+test("@constructor => creates a new instance with the minimal required configuration", (t) => {
   const config = createModuleConfig();
 
   t.notThrows(() => new ResourceOwnerPassword(config));
@@ -35,11 +35,11 @@ test('@constructor => creates a new instance with the minimal required configura
   t.notThrows(() => new AuthorizationCode(config));
 });
 
-test('@constructor => creates a new instance with empty credentials', (t) => {
+test("@constructor => creates a new instance with empty credentials", (t) => {
   const config = createModuleConfig({
     client: {
-      id: '',
-      secret: '',
+      id: "",
+      secret: "",
     },
   });
 
@@ -48,11 +48,11 @@ test('@constructor => creates a new instance with empty credentials', (t) => {
   t.notThrows(() => new AuthorizationCode(config));
 });
 
-test('@constructor => creates a new instance with visual non-control characters', (t) => {
+test("@constructor => creates a new instance with visual non-control characters", (t) => {
   const config = createModuleConfig({
     client: {
-      id: '\x20hello\x7E',
-      secret: '\x20world\x7E',
+      id: "\x20hello\x7E",
+      secret: "\x20world\x7E",
     },
   });
 
