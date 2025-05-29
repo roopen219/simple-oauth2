@@ -1,5 +1,3 @@
-"use strict";
-
 import BaseChance from "chance";
 import accessTokenMixin from "chance-access-token";
 

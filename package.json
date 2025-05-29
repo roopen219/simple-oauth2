@@ -23,7 +23,8 @@
   },
   "scripts": {
     "pretest": "npm run lint",
-    "test": "c8 ava",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
     "lint": "eslint .",
     "docs-gen": "doctoc README.md --github --no-title",
     "clean-install": "rm -rf node_modules && npm install"
@@ -56,8 +57,8 @@
   },
   "devDependencies": {
     "@hapi/boom": "^10.0.0",
-    "ava": "^4.3.3",
-    "c8": "^7.12.0",
+    "@hapi/hoek": "^11.0.7",
+    "@vitest/coverage-v8": "^1.6.1",
     "chance": "^1.1.9",
     "chance-access-token": "^2.1.0",
     "date-fns": "^2.29.3",
@@ -66,7 +67,7 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
     "express": "4.18.2",
-    "nock": "^13.2.9"
+    "vitest": "^1.6.1"
   },
   "volta": {
     "node": "18.12.0",

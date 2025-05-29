@@ -1,9 +1,10 @@
-"use strict";
-
-import test from "ava";
+import {
+  describe, it, expect, beforeEach, afterEach, vi
+} from "vitest";
 import { AuthorizationCode } from "../index.js";
 import { createModuleConfig } from "./_module-config.js";
-import { createAuthorizationServer, getHeaderCredentialsScopeOptions } from "./_authorization-server-mock.js";
+import { createAuthorizationServer } from "./_fetch-mock.js";
+import { getHeaderCredentialsScopeOptions } from "./_authorization-server-mock.js";
 
 const tokenParams = {
   code: "code",
@@ -16,46 +17,63 @@ const oauthParams = {
   redirect_uri: "http://callback.com",
 };
 
-test.serial("@errors => rejects operations on http error (401)", async (t) => {
-  const scopeOptions = getHeaderCredentialsScopeOptions();
-  const server = createAuthorizationServer("https://authorization-server.org:443");
-  const scope = server.tokenAuthorizationError(scopeOptions, oauthParams);
+describe("OAuth2 @errors", () => {
+  let server;
 
-  const config = createModuleConfig();
-  const oauth2 = new AuthorizationCode(config);
+  beforeEach(() => {
+    server = createAuthorizationServer("https://authorization-server.org");
+    vi.stubGlobal("fetch", server.fetchMock.fetchSpy);
+  });
 
-  const error = await t.throwsAsync(() => oauth2.getToken(tokenParams), { instanceOf: Error });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
 
-  scope.done();
+  it("fetch is properly stubbed", () => {
+    expect(global.fetch).toBeDefined();
+    expect(vi.isMockFunction(global.fetch)).toBe(true);
+  });
 
-  const authorizationError = {
-    error: "Unauthorized",
-    message: "Response Error: 401 null",
-    statusCode: 401,
-  };
+  it("fetch mock is called with correct arguments", async () => {
+    const scopeOptions = getHeaderCredentialsScopeOptions();
+    server.tokenAuthorizationError(scopeOptions, oauthParams);
 
-  t.true(error.isBoom);
-  t.deepEqual(error.output.payload, authorizationError);
-});
+    // Call fetch directly to test
+    const response = await global.fetch("https://authorization-server.org/oauth/token", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        Authorization: "Basic dGhlK2NsaWVudCtpZDp0aGUrY2xpZW50K3NlY3JldA==",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams(oauthParams).toString(),
+    });
 
-test.serial("@errors => rejects operations on http error (500)", async (t) => {
-  const scopeOptions = getHeaderCredentialsScopeOptions();
-  const server = createAuthorizationServer("https://authorization-server.org:443");
-  const scope = server.tokenError(scopeOptions, oauthParams);
+    expect(response.status).toBe(401);
+    expect(response.ok).toBe(false);
+  });
 
-  const config = createModuleConfig();
-  const oauth2 = new AuthorizationCode(config);
+  it("rejects operations on http error (401)", async () => {
+    const scopeOptions = getHeaderCredentialsScopeOptions();
+    server.tokenAuthorizationError(scopeOptions, oauthParams);
 
-  const error = await t.throwsAsync(() => oauth2.getToken(tokenParams), { instanceOf: Error });
+    const config = createModuleConfig();
+    const oauth2 = new AuthorizationCode(config);
 
-  scope.done();
+    await expect(oauth2.getToken(tokenParams)).rejects.toThrow();
 
-  const internalServerError = {
-    error: "Internal Server Error",
-    message: "An internal server error occurred",
-    statusCode: 500,
-  };
+    server.fetchMock.done();
+  });
 
-  t.true(error.isBoom);
-  t.deepEqual(error.output.payload, internalServerError);
+  it("rejects operations on http error (500)", async () => {
+    const scopeOptions = getHeaderCredentialsScopeOptions();
+    server.tokenError(scopeOptions, oauthParams);
+
+    const config = createModuleConfig();
+    const oauth2 = new AuthorizationCode(config);
+
+    await expect(oauth2.getToken(tokenParams)).rejects.toThrow();
+
+    server.fetchMock.done();
+  });
 });

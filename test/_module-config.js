@@ -1,6 +1,4 @@
-"use strict";
-
-import Hoek from "@hapi/hoek";
+import { applyToDefaults } from "@hapi/hoek";
 import Joi from "joi";
 import { AuthorizationCodeSchema } from "../lib/config.js";
 
@@ -15,7 +13,7 @@ const baseConfig = {
 };
 
 function createModuleConfig(config = {}) {
-  return Hoek.applyToDefaults(baseConfig, config);
+  return applyToDefaults(baseConfig, config);
 }
 
 function createModuleConfigWithDefaults(config = {}) {

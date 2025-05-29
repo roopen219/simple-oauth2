@@ -1,62 +1,58 @@
-"use strict";
-
-import test from "ava";
+import { describe, it, expect } from "vitest";
 
 import { ResourceOwnerPassword, ClientCredentials, AuthorizationCode } from "../index.js";
 import { createModuleConfig } from "./_module-config.js";
 
-test("@constructor => throws a validation error when no configuration is provided", (t) => {
-  t.throws(() => new ResourceOwnerPassword());
-  t.throws(() => new ClientCredentials());
-  t.throws(() => new AuthorizationCode());
-});
-
-test("@constructor => throws a validation error when http.baseUrl is provided", (t) => {
-  const options = createModuleConfig({
-    http: {
-      baseUrl: "",
-    },
+describe("OAuth2 @constructor", () => {
+  it("throws a validation error when no configuration is provided", () => {
+    expect(() => new ResourceOwnerPassword()).toThrow();
+    expect(() => new ClientCredentials()).toThrow();
+    expect(() => new AuthorizationCode()).toThrow();
   });
 
-  const expected = {
-    message: /not allowed/,
-  };
+  it("throws a validation error when http.baseUrl is provided", () => {
+    const options = createModuleConfig({
+      http: {
+        baseUrl: "",
+      },
+    });
 
-  t.throws(() => new ResourceOwnerPassword(options), expected);
-  t.throws(() => new ClientCredentials(options), expected);
-  t.throws(() => new AuthorizationCode(options), expected);
-});
-
-test("@constructor => creates a new instance with the minimal required configuration", (t) => {
-  const config = createModuleConfig();
-
-  t.notThrows(() => new ResourceOwnerPassword(config));
-  t.notThrows(() => new ClientCredentials(config));
-  t.notThrows(() => new AuthorizationCode(config));
-});
-
-test("@constructor => creates a new instance with empty credentials", (t) => {
-  const config = createModuleConfig({
-    client: {
-      id: "",
-      secret: "",
-    },
+    expect(() => new ResourceOwnerPassword(options)).toThrow(/not allowed/);
+    expect(() => new ClientCredentials(options)).toThrow(/not allowed/);
+    expect(() => new AuthorizationCode(options)).toThrow(/not allowed/);
   });
 
-  t.notThrows(() => new ResourceOwnerPassword(config));
-  t.notThrows(() => new ClientCredentials(config));
-  t.notThrows(() => new AuthorizationCode(config));
-});
+  it("creates a new instance with the minimal required configuration", () => {
+    const config = createModuleConfig();
 
-test("@constructor => creates a new instance with visual non-control characters", (t) => {
-  const config = createModuleConfig({
-    client: {
-      id: "\x20hello\x7E",
-      secret: "\x20world\x7E",
-    },
+    expect(() => new ResourceOwnerPassword(config)).not.toThrow();
+    expect(() => new ClientCredentials(config)).not.toThrow();
+    expect(() => new AuthorizationCode(config)).not.toThrow();
   });
 
-  t.notThrows(() => new ResourceOwnerPassword(config));
-  t.notThrows(() => new ClientCredentials(config));
-  t.notThrows(() => new AuthorizationCode(config));
+  it("creates a new instance with empty credentials", () => {
+    const config = createModuleConfig({
+      client: {
+        id: "",
+        secret: "",
+      },
+    });
+
+    expect(() => new ResourceOwnerPassword(config)).not.toThrow();
+    expect(() => new ClientCredentials(config)).not.toThrow();
+    expect(() => new AuthorizationCode(config)).not.toThrow();
+  });
+
+  it("creates a new instance with visual non-control characters", () => {
+    const config = createModuleConfig({
+      client: {
+        id: "\x20hello\x7E",
+        secret: "\x20world\x7E",
+      },
+    });
+
+    expect(() => new ResourceOwnerPassword(config)).not.toThrow();
+    expect(() => new ClientCredentials(config)).not.toThrow();
+    expect(() => new AuthorizationCode(config)).not.toThrow();
+  });
 });

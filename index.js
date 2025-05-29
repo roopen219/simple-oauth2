@@ -1,5 +1,3 @@
-"use strict";
-
 import Joi from "joi";
 import { Client } from "./lib/client/index.js";
 import AuthorizationCodeGrantType from "./lib/authorization-code-grant-type.js";
@@ -44,4 +42,6 @@ class ResourceOwnerPassword extends ResourceOwnerPasswordGrantType {
   }
 }
 
-export { ResourceOwnerPassword, ClientCredentials, AuthorizationCode, KekaApiCode };
+export {
+  ResourceOwnerPassword, ClientCredentials, AuthorizationCode, KekaApiCode,
+};

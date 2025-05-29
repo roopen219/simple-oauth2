@@ -5,13 +5,7 @@
     "ecmaVersion": 2022
   },
   "rules": {
-    "max-len": [
-      "error",
-      {
-        "code": 120,
-        "ignoreComments": true
-      }
-    ],
+    "max-len": ["off"],
     "import/no-unresolved": [
       "error",
       {
@@ -19,6 +13,19 @@
       }
     ],
     "max-classes-per-file": ["off"],
-    "lines-between-class-members": ["off"]
+    "lines-between-class-members": ["off"],
+    "quotes": ["error", "double"],
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "always",
+        "mjs": "always",
+        "jsx": "always"
+      }
+    ],
+    "default-param-last": ["off"],
+    "no-shadow": ["off"],
+    "comma-dangle": ["off"]
   }
 }
