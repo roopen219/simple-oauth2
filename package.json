@@ -48,7 +48,6 @@
     "credentials"
   ],
   "dependencies": {
-    "debug": "4.3.4",
     "deepmerge": "4.2.2",
     "joi": "17.7.0",
     "luxon": "3.5.0",
