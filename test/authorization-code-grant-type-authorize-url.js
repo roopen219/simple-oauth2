@@ -1,228 +1,234 @@
-'use strict';
+import { describe, it, expect } from "vitest";
+import { AuthorizationCode } from "../index.js";
+import { createModuleConfig } from "./_module-config.js";
 
-const test = require('ava');
-const { AuthorizationCode } = require('../index');
-const { createModuleConfig } = require('./_module-config');
+describe("AuthorizationCode @authorizeURL", () => {
+  it("returns the authorization URL with no options and default module configuration", () => {
+    const config = createModuleConfig();
+    const oauth2 = new AuthorizationCode(config);
 
-test('@authorizeURL => returns the authorization URL with no options and default module configuration', (t) => {
-  const config = createModuleConfig();
-  const oauth2 = new AuthorizationCode(config);
+    const actual = oauth2.authorizeURL();
+    const expected = "https://authorization-server.org/oauth/authorize?response_type=code&client_id=the+client+id";
 
-  const actual = oauth2.authorizeURL();
-  const expected = 'https://authorization-server.org/oauth/authorize?response_type=code&client_id=the+client+id';
-
-  t.is(actual, expected);
-});
-
-test('@authorizeURL => returns the authorization URL with options and default module configuration', (t) => {
-  const authorizeParams = {
-    redirect_uri: 'http://localhost:3000/callback',
-    scope: 'user',
-    state: '02afe928b',
-  };
-
-  const config = createModuleConfig();
-  const oauth2 = new AuthorizationCode(config);
-
-  const actual = oauth2.authorizeURL(authorizeParams);
-  const expected = `https://authorization-server.org/oauth/authorize?response_type=code&client_id=the+client+id&redirect_uri=${encodeURIComponent('http://localhost:3000/callback')}&scope=user&state=02afe928b`;
-
-  t.is(actual, expected);
-});
-
-test('@authorizeURL => returns the authorization URL with an scope array and default module configuration', (t) => {
-  const authorizeParams = {
-    redirect_uri: 'http://localhost:3000/callback',
-    state: '02afe928b',
-    scope: ['user', 'account'],
-  };
-
-  const config = createModuleConfig();
-  const oauth2 = new AuthorizationCode(config);
-
-  const actual = oauth2.authorizeURL(authorizeParams);
-  const expected = `https://authorization-server.org/oauth/authorize?response_type=code&client_id=the+client+id&redirect_uri=${encodeURIComponent('http://localhost:3000/callback')}&state=02afe928b&scope=user+account`;
-
-  t.is(actual, expected);
-});
-
-test('@authorizeURL => returns the authorization URL with an scope array and a custom module configuration (scope separator)', (t) => {
-  const authorizeParams = {
-    redirect_uri: 'http://localhost:3000/callback',
-    state: '02afe928b',
-    scope: ['user', 'account'],
-  };
-
-  const config = createModuleConfig({
-    options: {
-      scopeSeparator: ',',
-    },
+    expect(actual).toBe(expected);
   });
 
-  const oauth2 = new AuthorizationCode(config);
+  it("returns the authorization URL with options and default module configuration", () => {
+    const authorizeParams = {
+      redirect_uri: "http://localhost:3000/callback",
+      scope: "user",
+      state: "02afe928b",
+    };
 
-  const actual = oauth2.authorizeURL(authorizeParams);
-  const expected = `https://authorization-server.org/oauth/authorize?response_type=code&client_id=the+client+id&redirect_uri=${encodeURIComponent('http://localhost:3000/callback')}&state=02afe928b&scope=user%2Caccount`;
+    const config = createModuleConfig();
+    const oauth2 = new AuthorizationCode(config);
 
-  t.is(actual, expected);
-});
+    const actual = oauth2.authorizeURL(authorizeParams);
+    const expected = `https://authorization-server.org/oauth/authorize?response_type=code&client_id=the+client+id&redirect_uri=${encodeURIComponent(
+      "http://localhost:3000/callback"
+    )}&scope=user&state=02afe928b`;
 
-test('@authorizeURL => returns the authorization URL with a custom module configuration (client id param name)', (t) => {
-  const config = createModuleConfig({
-    client: {
-      id: 'client-id',
-      secret: 'client-secret',
-      idParamName: 'incredible-param-name',
-    },
+    expect(actual).toBe(expected);
   });
 
-  const oauth2 = new AuthorizationCode(config);
+  it("returns the authorization URL with an scope array and default module configuration", () => {
+    const authorizeParams = {
+      redirect_uri: "http://localhost:3000/callback",
+      state: "02afe928b",
+      scope: ["user", "account"],
+    };
 
-  const actual = oauth2.authorizeURL();
-  const expected = 'https://authorization-server.org/oauth/authorize?response_type=code&incredible-param-name=client-id';
+    const config = createModuleConfig();
+    const oauth2 = new AuthorizationCode(config);
 
-  t.is(actual, expected);
-});
+    const actual = oauth2.authorizeURL(authorizeParams);
+    const expected = `https://authorization-server.org/oauth/authorize?response_type=code&client_id=the+client+id&redirect_uri=${encodeURIComponent(
+      "http://localhost:3000/callback"
+    )}&state=02afe928b&scope=user+account`;
 
-test('@authorizeURL => returns the authorization URL with a custom module configuration (authorize host)', (t) => {
-  const config = createModuleConfig({
-    client: {
-      id: 'client-id',
-      secret: 'client-secret',
-    },
-    auth: {
-      tokenHost: 'https://authorization-server.org',
-      authorizeHost: 'https://other-authorization-server.com',
-    },
+    expect(actual).toBe(expected);
   });
 
-  const oauth2 = new AuthorizationCode(config);
+  it("returns the authorization URL with an scope array and a custom module configuration (scope separator)", () => {
+    const authorizeParams = {
+      redirect_uri: "http://localhost:3000/callback",
+      state: "02afe928b",
+      scope: ["user", "account"],
+    };
 
-  const actual = oauth2.authorizeURL();
-  const expected = 'https://other-authorization-server.com/oauth/authorize?response_type=code&client_id=client-id';
+    const config = createModuleConfig({
+      options: {
+        scopeSeparator: ",",
+      },
+    });
 
-  t.is(actual, expected);
-});
+    const oauth2 = new AuthorizationCode(config);
 
-test('@authorizeURL => returns the authorization URL with a custom module configuration (authorize host with trailing slashes)', (t) => {
-  const config = createModuleConfig({
-    client: {
-      id: 'client-id',
-      secret: 'client-secret',
-    },
-    auth: {
-      tokenHost: 'https://authorization-server.org',
-      authorizeHost: 'https://other-authorization-server.com/root/',
-    },
+    const actual = oauth2.authorizeURL(authorizeParams);
+    const expected = `https://authorization-server.org/oauth/authorize?response_type=code&client_id=the+client+id&redirect_uri=${encodeURIComponent(
+      "http://localhost:3000/callback"
+    )}&state=02afe928b&scope=user%2Caccount`;
+
+    expect(actual).toBe(expected);
   });
 
-  const oauth2 = new AuthorizationCode(config);
+  it("returns the authorization URL with a custom module configuration (client id param name)", () => {
+    const config = createModuleConfig({
+      client: {
+        id: "client-id",
+        secret: "client-secret",
+        idParamName: "incredible-param-name",
+      },
+    });
 
-  const actual = oauth2.authorizeURL();
-  const expected = 'https://other-authorization-server.com/oauth/authorize?response_type=code&client_id=client-id';
+    const oauth2 = new AuthorizationCode(config);
 
-  t.is(actual, expected);
-});
+    const actual = oauth2.authorizeURL();
+    const expected = "https://authorization-server.org/oauth/authorize?response_type=code&incredible-param-name=client-id";
 
-test('@authorizeURL => returns the authorization URL with a custom module configuration (authorize path)', (t) => {
-  const config = createModuleConfig({
-    client: {
-      id: 'client-id',
-      secret: 'client-secret',
-    },
-    auth: {
-      tokenHost: 'https://authorization-server.org',
-      authorizePath: '/authorize-now',
-    },
+    expect(actual).toBe(expected);
   });
 
-  const oauth2 = new AuthorizationCode(config);
+  it("returns the authorization URL with a custom module configuration (authorize host)", () => {
+    const config = createModuleConfig({
+      client: {
+        id: "client-id",
+        secret: "client-secret",
+      },
+      auth: {
+        tokenHost: "https://authorization-server.org",
+        authorizeHost: "https://other-authorization-server.com",
+      },
+    });
 
-  const actual = oauth2.authorizeURL();
-  const expected = 'https://authorization-server.org/authorize-now?response_type=code&client_id=client-id';
+    const oauth2 = new AuthorizationCode(config);
 
-  t.is(actual, expected);
-});
+    const actual = oauth2.authorizeURL();
+    const expected = "https://other-authorization-server.com/oauth/authorize?response_type=code&client_id=client-id";
 
-test('@authorizeURL => returns the authorization URL with a custom module configuration (authorize path with query params)', (t) => {
-  const config = createModuleConfig({
-    client: {
-      id: 'client-id',
-      secret: 'client-secret',
-    },
-    auth: {
-      tokenHost: 'https://authorization-server.org',
-      authorizePath: '/authorize-now?unique=param',
-    },
+    expect(actual).toBe(expected);
   });
 
-  const oauth2 = new AuthorizationCode(config);
+  it("returns the authorization URL with a custom module configuration (authorize host with trailing slashes)", () => {
+    const config = createModuleConfig({
+      client: {
+        id: "client-id",
+        secret: "client-secret",
+      },
+      auth: {
+        tokenHost: "https://authorization-server.org",
+        authorizeHost: "https://other-authorization-server.com/root/",
+      },
+    });
 
-  const actual = oauth2.authorizeURL();
-  const expected = 'https://authorization-server.org/authorize-now?unique=param&response_type=code&client_id=client-id';
+    const oauth2 = new AuthorizationCode(config);
 
-  t.is(actual, expected);
-});
+    const actual = oauth2.authorizeURL();
+    const expected = "https://other-authorization-server.com/oauth/authorize?response_type=code&client_id=client-id";
 
-test('@authorizeURL => returns the authorization URL with a custom module configuration (authorize path with query params conflicting with mandatory params)', (t) => {
-  const config = createModuleConfig({
-    client: {
-      id: 'client-id',
-      secret: 'client-secret',
-    },
-    auth: {
-      tokenHost: 'https://authorization-server.org',
-      authorizePath: '/authorize-now?response_type=token',
-    },
+    expect(actual).toBe(expected);
   });
 
-  const oauth2 = new AuthorizationCode(config);
+  it("returns the authorization URL with a custom module configuration (authorize path)", () => {
+    const config = createModuleConfig({
+      client: {
+        id: "client-id",
+        secret: "client-secret",
+      },
+      auth: {
+        tokenHost: "https://authorization-server.org",
+        authorizePath: "/authorize-now",
+      },
+    });
 
-  const actual = oauth2.authorizeURL();
-  const expected = 'https://authorization-server.org/authorize-now?response_type=code&client_id=client-id';
+    const oauth2 = new AuthorizationCode(config);
 
-  t.is(actual, expected);
-});
+    const actual = oauth2.authorizeURL();
+    const expected = "https://authorization-server.org/authorize-now?response_type=code&client_id=client-id";
 
-test('@authorizeURL => returns the authorization URL with a custom module configuration (authorize path with query params conflicting with override params)', (t) => {
-  const config = createModuleConfig({
-    client: {
-      id: 'client-id',
-      secret: 'client-secret',
-    },
-    auth: {
-      tokenHost: 'https://authorization-server.org',
-      authorizePath: '/authorize-now?custom=base',
-    },
+    expect(actual).toBe(expected);
   });
 
-  const authorizeParams = {
-    custom: 'override',
-  };
+  it("returns the authorization URL with a custom module configuration (authorize path with query params)", () => {
+    const config = createModuleConfig({
+      client: {
+        id: "client-id",
+        secret: "client-secret",
+      },
+      auth: {
+        tokenHost: "https://authorization-server.org",
+        authorizePath: "/authorize-now?unique=param",
+      },
+    });
 
-  const oauth2 = new AuthorizationCode(config);
+    const oauth2 = new AuthorizationCode(config);
 
-  const actual = oauth2.authorizeURL(authorizeParams);
-  const expected = 'https://authorization-server.org/authorize-now?custom=override&response_type=code&client_id=client-id';
+    const actual = oauth2.authorizeURL();
+    const expected = "https://authorization-server.org/authorize-now?unique=param&response_type=code&client_id=client-id";
 
-  t.is(actual, expected);
-});
-
-test('@authorizeURL => returns the authorization URL with a custom module configuration (authorize host and path)', (t) => {
-  const oauth2 = new AuthorizationCode({
-    client: {
-      id: 'client-id',
-      secret: 'client-secret',
-    },
-    auth: {
-      tokenHost: 'https://authorization-server.org',
-      authorizeHost: 'https://other-authorization-server.com/api/',
-      authorizePath: '/authorize-now',
-    },
+    expect(actual).toBe(expected);
   });
 
-  const actual = oauth2.authorizeURL();
-  const expected = 'https://other-authorization-server.com/authorize-now?response_type=code&client_id=client-id';
+  it("returns the authorization URL with a custom module configuration (authorize path with query params conflicting with mandatory params)", () => {
+    const config = createModuleConfig({
+      client: {
+        id: "client-id",
+        secret: "client-secret",
+      },
+      auth: {
+        tokenHost: "https://authorization-server.org",
+        authorizePath: "/authorize-now?response_type=token",
+      },
+    });
 
-  t.is(actual, expected);
+    const oauth2 = new AuthorizationCode(config);
+
+    const actual = oauth2.authorizeURL();
+    const expected = "https://authorization-server.org/authorize-now?response_type=code&client_id=client-id";
+
+    expect(actual).toBe(expected);
+  });
+
+  it("returns the authorization URL with a custom module configuration (authorize path with query params conflicting with override params)", () => {
+    const config = createModuleConfig({
+      client: {
+        id: "client-id",
+        secret: "client-secret",
+      },
+      auth: {
+        tokenHost: "https://authorization-server.org",
+        authorizePath: "/authorize-now?custom=base",
+      },
+    });
+
+    const authorizeParams = {
+      custom: "override",
+    };
+
+    const oauth2 = new AuthorizationCode(config);
+
+    const actual = oauth2.authorizeURL(authorizeParams);
+    const expected = "https://authorization-server.org/authorize-now?custom=override&response_type=code&client_id=client-id";
+
+    expect(actual).toBe(expected);
+  });
+
+  it("returns the authorization URL with a custom module configuration (authorize host and path)", () => {
+    const oauth2 = new AuthorizationCode({
+      client: {
+        id: "client-id",
+        secret: "client-secret",
+      },
+      auth: {
+        tokenHost: "https://authorization-server.org",
+        authorizeHost: "https://other-authorization-server.com/api/",
+        authorizePath: "/authorize-now",
+      },
+    });
+
+    const actual = oauth2.authorizeURL();
+    const expected = "https://other-authorization-server.com/authorize-now?response_type=code&client_id=client-id";
+
+    expect(actual).toBe(expected);
+  });
 });

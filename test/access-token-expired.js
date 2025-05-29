@@ -1,68 +1,68 @@
-'use strict';
+import { describe, it, expect } from "vitest";
 
-const test = require('ava');
-
-const Chance = require('./_chance');
-const AccessToken = require('../lib/access-token');
-const { Client } = require('../lib/client');
-const { createModuleConfigWithDefaults: createModuleConfig } = require('./_module-config');
+import Chance from "./_chance.js";
+import AccessToken from "../lib/access-token.js";
+import { Client } from "../lib/client/index.js";
+import { createModuleConfigWithDefaults as createModuleConfig } from "./_module-config.js";
 
 const chance = new Chance();
 
-test('@expired => returns true when expired', (t) => {
-  const config = createModuleConfig();
-  const client = new Client(config);
+describe("AccessToken @expired", () => {
+  it("returns true when expired", () => {
+    const config = createModuleConfig();
+    const client = new Client(config);
 
-  const accessTokenResponse = chance.accessToken({
-    expired: true,
-    expireMode: 'expires_at',
+    const accessTokenResponse = chance.accessToken({
+      expired: true,
+      expireMode: "expires_at",
+    });
+
+    const accessToken = new AccessToken(config, client, accessTokenResponse);
+
+    expect(accessToken.expired()).toBe(true);
   });
 
-  const accessToken = new AccessToken(config, client, accessTokenResponse);
+  it("returns true if the token is expiring within the expiration window", () => {
+    const config = createModuleConfig();
+    const client = new Client(config);
 
-  t.true(accessToken.expired());
-});
+    const accessTokenResponse = {
+      ...chance.accessToken({
+        expireMode: "expires_in",
+      }),
+      expires_in: 10,
+    };
 
-test('@expired => returns true if the token is expiring within the expiration window', (t) => {
-  const config = createModuleConfig();
-  const client = new Client(config);
+    const expirationWindowSeconds = 11;
+    const accessToken = new AccessToken(config, client, accessTokenResponse);
 
-  const accessTokenResponse = {
-    ...chance.accessToken({
-      expireMode: 'expires_in',
-    }),
-    expires_in: 10,
-  };
-
-  const expirationWindowSeconds = 11;
-  const accessToken = new AccessToken(config, client, accessTokenResponse);
-
-  t.true(accessToken.expired(expirationWindowSeconds));
-});
-
-test('@expired => returns false when not expired', (t) => {
-  const config = createModuleConfig();
-  const client = new Client(config);
-
-  const accessTokenResponse = chance.accessToken({
-    expired: false,
-    expireMode: 'expires_at',
+    expect(accessToken.expired(expirationWindowSeconds)).toBe(true);
   });
 
-  const accessToken = new AccessToken(config, client, accessTokenResponse);
+  it("returns false when not expired", () => {
+    const config = createModuleConfig();
+    const client = new Client(config);
 
-  t.false(accessToken.expired());
-});
+    const accessTokenResponse = chance.accessToken({
+      expired: false,
+      expireMode: "expires_at",
+    });
 
-test('@expired => returns false when no expiration property is present', (t) => {
-  const config = createModuleConfig();
-  const client = new Client(config);
+    const accessToken = new AccessToken(config, client, accessTokenResponse);
 
-  const accessTokenResponse = chance.accessToken({
-    expireMode: 'no_expiration',
+    expect(accessToken.expired()).toBe(false);
   });
 
-  const accessToken = new AccessToken(config, client, accessTokenResponse);
+  it("returns false when no expiration property is present", () => {
+    const config = createModuleConfig();
+    const client = new Client(config);
 
-  t.false(accessToken.expired());
+    const accessTokenResponse = chance.accessToken({
+      expireMode: "no_expiration",
+    });
+
+    const accessToken = new AccessToken(config, client, accessTokenResponse);
+
+    expect(accessToken.expired()).toBe(false);
+  });
 });

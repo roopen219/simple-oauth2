@@ -1,9 +1,4 @@
-'use strict';
-
-const has = (...args) => Object.prototype.hasOwnProperty.call(...args);
+const has = (object, property) => Object.hasOwn(object, property);
 const hasIn = (object, propertyName) => propertyName in object;
 
-module.exports = {
-  has,
-  hasIn,
-};
+export { has, hasIn };

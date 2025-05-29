@@ -1,14 +1,14 @@
-'use strict';
+import { describe, it, expect } from "vitest";
+import { AuthorizationCode } from "../index.js";
+import AccessToken from "../lib/access-token.js";
+import { createModuleConfig } from "./_module-config.js";
+import { getAccessToken } from "./_fetch-mock.js";
 
-const test = require('ava');
-const { AuthorizationCode } = require('../index');
-const AccessToken = require('../lib/access-token');
-const { createModuleConfig } = require('./_module-config');
-const { getAccessToken } = require('./_authorization-server-mock');
+describe("AuthorizationCode @createToken", () => {
+  it("creates a new access token instance from a JSON object", async () => {
+    const oauth2 = new AuthorizationCode(createModuleConfig());
+    const accessToken = oauth2.createToken(getAccessToken());
 
-test('@createToken => creates a new access token instance from a JSON object', async (t) => {
-  const oauth2 = new AuthorizationCode(createModuleConfig());
-  const accessToken = oauth2.createToken(getAccessToken());
-
-  t.true(accessToken instanceof AccessToken);
+    expect(accessToken).toBeInstanceOf(AccessToken);
+  });
 });

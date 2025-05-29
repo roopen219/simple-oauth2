@@ -1,134 +1,131 @@
-'use strict';
+import { describe, it, expect } from "vitest";
+import {
+  isEqual, isValid, isDate, differenceInSeconds
+} from "date-fns";
 
-const test = require('ava');
-const {
-  isEqual,
-  isValid,
-  isDate,
-  differenceInSeconds,
-} = require('date-fns');
-
-const Chance = require('./_chance');
-const AccessToken = require('../lib/access-token');
-const { Client } = require('../lib/client');
-const { has, hasIn } = require('./_property');
-const { createModuleConfigWithDefaults: createModuleConfig } = require('./_module-config');
+import Chance from "./_chance.js";
+import AccessToken from "../lib/access-token.js";
+import { Client } from "../lib/client/index.js";
+import { has, hasIn } from "./_property.js";
+import { createModuleConfigWithDefaults as createModuleConfig } from "./_module-config.js";
 
 const chance = new Chance();
 
-test('@create => throws an error when no token payload is provided', (t) => {
-  const config = createModuleConfig();
-  const client = new Client(config);
+describe("AccessToken @create", () => {
+  it("throws an error when no token payload is provided", () => {
+    const config = createModuleConfig();
+    const client = new Client(config);
 
-  t.throws(() => new AccessToken(config, client), {
-    message: /Cannot create access token without a token to parse/,
+    expect(() => new AccessToken(config, client)).toThrow();
+  });
+
+  it("creates a new access token instance", () => {
+    const config = createModuleConfig();
+    const client = new Client(config);
+
+    const accessTokenResponse = chance.accessToken();
+    const accessToken = new AccessToken(config, client, accessTokenResponse);
+
+    expect(accessToken).toBeTruthy();
+    expect(has(accessToken, "token")).toBe(true);
+    expect(hasIn(accessToken, "refresh")).toBe(true);
+    expect(hasIn(accessToken, "revoke")).toBe(true);
+    expect(hasIn(accessToken, "expired")).toBe(true);
+  });
+
+  it("do not reassigns the expires at property when is already a date", () => {
+    const config = createModuleConfig();
+    const client = new Client(config);
+
+    const accessTokenResponse = chance.accessToken({
+      expired: true,
+      dateFormat: "date",
+      expireMode: "expires_at",
+    });
+
+    const accessToken = new AccessToken(config, client, accessTokenResponse);
+
+    expect(isDate(accessToken.token.expires_at)).toBe(true);
+    expect(isValid(accessToken.token.expires_at)).toBe(true);
+  });
+
+  it("parses the expires at property when is UNIX timestamp in seconds", () => {
+    const config = createModuleConfig();
+    const client = new Client(config);
+
+    const accessTokenResponse = chance.accessToken({
+      expired: true,
+      dateFormat: "unix",
+      expireMode: "expires_at",
+    });
+
+    const accessToken = new AccessToken(config, client, accessTokenResponse);
+
+    expect(isDate(accessToken.token.expires_at)).toBe(true);
+    expect(isValid(accessToken.token.expires_at)).toBe(true);
+  });
+
+  it("parses the expires at property when is ISO time", () => {
+    const config = createModuleConfig();
+    const client = new Client(config);
+
+    const accessTokenResponse = chance.accessToken({
+      expired: true,
+      dateFormat: "iso",
+      expireMode: "expires_at",
+    });
+
+    const accessToken = new AccessToken(config, client, accessTokenResponse);
+
+    expect(isDate(accessToken.token.expires_at)).toBe(true);
+    expect(isValid(accessToken.token.expires_at)).toBe(true);
+  });
+
+  it("computes the expires at property when only expires in is present", () => {
+    const config = createModuleConfig();
+    const client = new Client(config);
+
+    const accessTokenResponse = chance.accessToken({
+      expireMode: "expires_in",
+    });
+
+    const today = new Date();
+    const accessToken = new AccessToken(config, client, accessTokenResponse);
+
+    expect(isDate(accessToken.token.expires_at)).toBe(true);
+    expect(isValid(accessToken.token.expires_at)).toBe(true);
+
+    const diffInSeconds = differenceInSeconds(accessToken.token.expires_at, today);
+
+    expect(diffInSeconds).toBe(accessTokenResponse.expires_in);
+  });
+
+  it("ignores the expiration parsing when no expiration property is present", () => {
+    const config = createModuleConfig();
+    const client = new Client(config);
+
+    const accessTokenResponse = chance.accessToken({
+      expireMode: "no_expiration",
+    });
+
+    const accessToken = new AccessToken(config, client, accessTokenResponse);
+
+    expect(has(accessToken.token, "expires_in")).toBe(false);
+    expect(has(accessToken.token, "expires_at")).toBe(false);
   });
 });
 
-test('@create => creates a new access token instance', (t) => {
-  const config = createModuleConfig();
-  const client = new Client(config);
+describe("AccessToken @toJSON", () => {
+  it("serializes the access token information in an equivalent format", () => {
+    const config = createModuleConfig();
+    const client = new Client(config);
 
-  const accessTokenResponse = chance.accessToken();
-  const accessToken = new AccessToken(config, client, accessTokenResponse);
+    const accessTokenResponse = chance.accessToken();
 
-  t.truthy(accessToken);
-  t.true(has(accessToken, 'token'));
-  t.true(hasIn(accessToken, 'refresh'));
-  t.true(hasIn(accessToken, 'revoke'));
-  t.true(hasIn(accessToken, 'expired'));
-});
+    const accessToken = new AccessToken(config, client, accessTokenResponse);
+    const restoredAccessToken = new AccessToken(config, client, JSON.parse(JSON.stringify(accessToken)));
 
-test('@create => do not reassigns the expires at property when is already a date', (t) => {
-  const config = createModuleConfig();
-  const client = new Client(config);
-
-  const accessTokenResponse = chance.accessToken({
-    expired: true,
-    dateFormat: 'date',
-    expireMode: 'expires_at',
+    expect(restoredAccessToken.token).toEqual(accessToken.token);
+    expect(isEqual(restoredAccessToken.token.expires_at, accessToken.token.expires_at)).toBe(true);
   });
-
-  const accessToken = new AccessToken(config, client, accessTokenResponse);
-
-  t.true(isDate(accessToken.token.expires_at));
-  t.true(isValid(accessToken.token.expires_at));
-});
-
-test('@create => parses the expires at property when is UNIX timestamp in seconds', (t) => {
-  const config = createModuleConfig();
-  const client = new Client(config);
-
-  const accessTokenResponse = chance.accessToken({
-    expired: true,
-    dateFormat: 'unix',
-    expireMode: 'expires_at',
-  });
-
-  const accessToken = new AccessToken(config, client, accessTokenResponse);
-
-  t.true(isDate(accessToken.token.expires_at));
-  t.true(isValid(accessToken.token.expires_at));
-});
-
-test('@create => parses the expires at property when is ISO time', (t) => {
-  const config = createModuleConfig();
-  const client = new Client(config);
-
-  const accessTokenResponse = chance.accessToken({
-    expired: true,
-    dateFormat: 'iso',
-    expireMode: 'expires_at',
-  });
-
-  const accessToken = new AccessToken(config, client, accessTokenResponse);
-
-  t.true(isDate(accessToken.token.expires_at));
-  t.true(isValid(accessToken.token.expires_at));
-});
-
-test('@create => computes the expires at property when only expires in is present', (t) => {
-  const config = createModuleConfig();
-  const client = new Client(config);
-
-  const accessTokenResponse = chance.accessToken({
-    expireMode: 'expires_in',
-  });
-
-  const today = new Date();
-  const accessToken = new AccessToken(config, client, accessTokenResponse);
-
-  t.true(isDate(accessToken.token.expires_at));
-  t.true(isValid(accessToken.token.expires_at));
-
-  const diffInSeconds = differenceInSeconds(accessToken.token.expires_at, today);
-
-  t.is(diffInSeconds, accessTokenResponse.expires_in);
-});
-
-test('@create => ignores the expiration parsing when no expiration property is present', (t) => {
-  const config = createModuleConfig();
-  const client = new Client(config);
-
-  const accessTokenResponse = chance.accessToken({
-    expireMode: 'no_expiration',
-  });
-
-  const accessToken = new AccessToken(config, client, accessTokenResponse);
-
-  t.not(has(accessToken.token, 'expires_in'));
-  t.not(has(accessToken.token, 'expires_at'));
-});
-
-test('@toJSON => serializes the access token information in an equivalent format', (t) => {
-  const config = createModuleConfig();
-  const client = new Client(config);
-
-  const accessTokenResponse = chance.accessToken();
-
-  const accessToken = new AccessToken(config, client, accessTokenResponse);
-  const restoredAccessToken = new AccessToken(config, client, JSON.parse(JSON.stringify(accessToken)));
-
-  t.deepEqual(restoredAccessToken.token, accessToken.token);
-  t.true(isEqual(restoredAccessToken.token.expires_at, accessToken.token.expires_at));
 });

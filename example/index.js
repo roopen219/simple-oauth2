@@ -1,11 +1,13 @@
-'use strict';
+"use strict";
 
-const app = require('express')();
+import express from "express";
+
+const app = express();
 
 const port = 3000;
 
-module.exports = (cb) => {
-  const callbackUrl = 'https://cabana-public.tunnel.jstdoit.xyz/callback';
+export default (cb) => {
+  const callbackUrl = "https://cabana-public.tunnel.jstdoit.xyz/callback";
 
   app.listen(port, (err) => {
     if (err) return console.error(err);

@@ -32,10 +32,10 @@
 
 ## Requirements
 
-| Version                                                                          | Node support        |
-|----------------------------------------------------------------------------------|---------------------|
-| [5.x](https://github.com/lelylan/simple-oauth2/tree/5.x)                         | Node 14.x or higher |
-| [6.x (Development)](https://github.com/lelylan/simple-oauth2/tree/master)        | Node 16.x or higher |
+| Version                                                                   | Node support        |
+| ------------------------------------------------------------------------- | ------------------- |
+| [5.x](https://github.com/lelylan/simple-oauth2/tree/5.x)                  | Node 14.x or higher |
+| [6.x (Development)](https://github.com/lelylan/simple-oauth2/tree/master) | Node 18.x or higher |
 
 Older node versions are unsupported.
 
@@ -50,17 +50,17 @@ npm install --save simple-oauth2
 With a minimal configuration, create a client instance of any supported [grant type](#supported-grant-types).
 
 ```javascript
+import { ClientCredentials, ResourceOwnerPassword, AuthorizationCode } from "simple-oauth2";
+
 const config = {
   client: {
-    id: '<client-id>',
-    secret: '<client-secret>'
+    id: "<client-id>",
+    secret: "<client-secret>",
   },
   auth: {
-    tokenHost: 'https://api.oauth.com'
-  }
+    tokenHost: "https://api.oauth.com",
+  },
 };
-
-const { ClientCredentials, ResourceOwnerPassword, AuthorizationCode } = require('simple-oauth2');
 ```
 
 For a complete reference of configuration options, see the [API Options](./API.md#options)
@@ -78,24 +78,24 @@ async function run() {
   const client = new AuthorizationCode(config);
 
   const authorizationUri = client.authorizeURL({
-    redirect_uri: 'http://localhost:3000/callback',
-    scope: '<scope>',
-    state: '<state>'
+    redirect_uri: "http://localhost:3000/callback",
+    scope: "<scope>",
+    state: "<state>",
   });
 
   // Redirect example using Express (see http://expressjs.com/api.html#res.redirect)
   res.redirect(authorizationUri);
 
   const tokenParams = {
-    code: '<code>',
-    redirect_uri: 'http://localhost:3000/callback',
-    scope: '<scope>',
+    code: "<code>",
+    redirect_uri: "http://localhost:3000/callback",
+    scope: "<scope>",
   };
 
   try {
     const accessToken = await client.getToken(tokenParams);
   } catch (error) {
-    console.log('Access Token Error', error.message);
+    console.log("Access Token Error", error.message);
   }
 }
 
@@ -113,15 +113,15 @@ async function run() {
   const client = new ResourceOwnerPassword(config);
 
   const tokenParams = {
-    username: 'username',
-    password: 'password',
-    scope: '<scope>',
+    username: "username",
+    password: "password",
+    scope: "<scope>",
   };
 
   try {
     const accessToken = await client.getToken(tokenParams);
   } catch (error) {
-    console.log('Access Token Error', error.message);
+    console.log("Access Token Error", error.message);
   }
 }
 
@@ -139,13 +139,13 @@ async function run() {
   const client = new ClientCredentials(config);
 
   const tokenParams = {
-    scope: '<scope>',
+    scope: "<scope>",
   };
 
   try {
     const accessToken = await client.getToken(tokenParams);
   } catch (error) {
-    console.log('Access Token error', error.message);
+    console.log("Access Token error", error.message);
   }
 }
 
@@ -161,7 +161,6 @@ On completion of any [supported grant type](#supported-grant-types) an access to
 #### Refresh an access token
 
 On long lived applications, it is often necessary to refresh access tokens. In such scenarios the access token is usually persisted in an external database by first serializing it.
-
 
 ```javascript
 async function run() {
@@ -192,12 +191,12 @@ async function run() {
   if (accessToken.expired()) {
     try {
       const refreshParams = {
-        scope: '<scope>',
+        scope: "<scope>",
       };
 
       accessToken = await accessToken.refresh(refreshParams);
     } catch (error) {
-      console.log('Error refreshing access token: ', error.message);
+      console.log("Error refreshing access token: ", error.message);
     }
   }
 }
@@ -217,7 +216,7 @@ async function run() {
     try {
       accessToken = await accessToken.refresh();
     } catch (error) {
-      console.log('Error refreshing access token: ', error.message);
+      console.log("Error refreshing access token: ", error.message);
     }
   }
 }
@@ -236,10 +235,10 @@ When you've done with the token or you want to log out, you can revoke both acce
 ```javascript
 async function run() {
   try {
-    await accessToken.revoke('access_token');
-    await accessToken.revoke('refresh_token');
+    await accessToken.revoke("access_token");
+    await accessToken.revoke("refresh_token");
   } catch (error) {
-    console.log('Error revoking token: ', error.message);
+    console.log("Error revoking token: ", error.message);
   }
 }
 
@@ -254,7 +253,7 @@ async function run() {
     // Revokes both tokens, refresh token is only revoked if the access_token is properly revoked
     await accessToken.revokeAll();
   } catch (error) {
-    console.log('Error revoking token: ', error.message);
+    console.log("Error revoking token: ", error.message);
   }
 }
 
@@ -273,7 +272,7 @@ async function run() {
 
   try {
     await client.getToken();
-  } catch(error) {
+  } catch (error) {
     console.log(error.output);
   }
 }
@@ -289,6 +288,7 @@ run();
 ```
 
 ## Debugging the module
+
 This module uses the [debug](https://github.com/visionmedia/debug) module to help on error diagnosis. Use the following environment variable to help in your debug journey:
 
 ```
@@ -307,7 +307,7 @@ See [CONTRIBUTING](./CONTRIBUTING.md)
 
 Special thanks to the following people for submitting patches.
 
-* [Jonathan Samines](https://github.com/jonathansamines)
+- [Jonathan Samines](https://github.com/jonathansamines)
 
 ## Changelog
 

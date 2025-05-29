@@ -1,16 +1,14 @@
-'use strict';
-
-const Joi = require('joi');
-const { Client } = require('./lib/client');
-const AuthorizationCodeGrantType = require('./lib/authorization-code-grant-type');
-const ResourceOwnerPasswordGrantType = require('./lib/resource-owner-password-grant-type');
-const ClientCredentialsGrantType = require('./lib/client-credentials-grant-type');
-const KekaApiGrantType = require('./lib/kekaapi-grant-type');
-const { AuthorizationCodeSchema, ClientCredentialsSchema, ResourceOwnerPasswordSchema } = require('./lib/config');
+import Joi from "joi";
+import { Client } from "./lib/client/index.js";
+import AuthorizationCodeGrantType from "./lib/authorization-code-grant-type.js";
+import ResourceOwnerPasswordGrantType from "./lib/resource-owner-password-grant-type.js";
+import ClientCredentialsGrantType from "./lib/client-credentials-grant-type.js";
+import KekaApiGrantType from "./lib/kekaapi-grant-type.js";
+import { AuthorizationCodeSchema, ClientCredentialsSchema, ResourceOwnerPasswordSchema } from "./lib/config.js";
 
 class AuthorizationCode extends AuthorizationCodeGrantType {
   constructor(options) {
-    const config = Joi.attempt(options, AuthorizationCodeSchema, 'Invalid options provided to simple-oauth2');
+    const config = Joi.attempt(options, AuthorizationCodeSchema, "Invalid options provided to simple-oauth2");
     const client = new Client(config);
 
     super(config, client);
@@ -19,7 +17,7 @@ class AuthorizationCode extends AuthorizationCodeGrantType {
 
 class KekaApiCode extends KekaApiGrantType {
   constructor(options) {
-    const config = Joi.attempt(options, AuthorizationCodeSchema, 'Invalid options provided to simple-oauth2');
+    const config = Joi.attempt(options, AuthorizationCodeSchema, "Invalid options provided to simple-oauth2");
     const client = new Client(config);
 
     super(config, client);
@@ -28,7 +26,7 @@ class KekaApiCode extends KekaApiGrantType {
 
 class ClientCredentials extends ClientCredentialsGrantType {
   constructor(options) {
-    const config = Joi.attempt(options, ClientCredentialsSchema, 'Invalid options provided to simple-oauth2');
+    const config = Joi.attempt(options, ClientCredentialsSchema, "Invalid options provided to simple-oauth2");
     const client = new Client(config);
 
     super(config, client);
@@ -37,16 +35,13 @@ class ClientCredentials extends ClientCredentialsGrantType {
 
 class ResourceOwnerPassword extends ResourceOwnerPasswordGrantType {
   constructor(options) {
-    const config = Joi.attempt(options, ResourceOwnerPasswordSchema, 'Invalid options provided to simple-oauth2');
+    const config = Joi.attempt(options, ResourceOwnerPasswordSchema, "Invalid options provided to simple-oauth2");
     const client = new Client(config);
 
     super(config, client);
   }
 }
 
-module.exports = {
-  ResourceOwnerPassword,
-  ClientCredentials,
-  AuthorizationCode,
-  KekaApiCode,
+export {
+  ResourceOwnerPassword, ClientCredentials, AuthorizationCode, KekaApiCode,
 };
