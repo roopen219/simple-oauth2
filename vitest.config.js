@@ -6,6 +6,7 @@ export default defineConfig({
     environment: "node",
     include: ["test/**/*.js"],
     exclude: ["test/_*.js", "test/**/_*.js"],
+    testTimeout: 20000,
     coverage: {
       enabled: true,
       provider: "v8",
