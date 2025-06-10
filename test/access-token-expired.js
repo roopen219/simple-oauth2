@@ -66,3 +66,22 @@ describe("AccessToken @expired", () => {
     expect(accessToken.expired()).toBe(false);
   });
 });
+
+describe("AccessToken @custom expiresInPropertyName", () => {
+  it("returns true when expired using a custom expiresInPropertyName", () => {
+    const customExpiresInPropertyName = "refresh_token_expires_in";
+    const config = createModuleConfig({
+      options: { expiresInPropertyName: customExpiresInPropertyName },
+    });
+    const client = new Client(config);
+    // Set created_at in the past and expires_in to a small value so it's expired
+    const now = Math.floor(Date.now() / 1000) - 20; // 20 seconds ago
+    const accessTokenResponse = {
+      access_token: "token",
+      [customExpiresInPropertyName]: 10, // expires 10 seconds after created_at
+      created_at: now,
+    };
+    const accessToken = new AccessToken(config, client, accessTokenResponse);
+    expect(accessToken.expired()).toBe(true);
+  });
+});

@@ -129,3 +129,28 @@ describe("AccessToken @toJSON", () => {
     expect(isEqual(restoredAccessToken.token.expires_at, accessToken.token.expires_at)).toBe(true);
   });
 });
+
+describe("AccessToken @custom expiresInPropertyName", () => {
+  it("computes the expires at property when a custom expiresInPropertyName is present", () => {
+    const customExpiresInPropertyName = "refresh_token_expires_in";
+    const expiresInValue = 120;
+    const config = createModuleConfig({
+      options: { expiresInPropertyName: customExpiresInPropertyName },
+    });
+    const client = new Client(config);
+
+    const now = Math.floor(Date.now() / 1000);
+    const accessTokenResponse = {
+      access_token: "token",
+      [customExpiresInPropertyName]: expiresInValue,
+      created_at: now,
+    };
+
+    const accessToken = new AccessToken(config, client, accessTokenResponse);
+    expect(isDate(accessToken.token.expires_at)).toBe(true);
+    expect(isValid(accessToken.token.expires_at)).toBe(true);
+    // The expires_at should be now + expiresInValue (in seconds)
+    const diffInSeconds = Math.round((accessToken.token.expires_at.getTime() - now * 1000) / 1000);
+    expect(diffInSeconds).toBe(expiresInValue);
+  });
+});
