@@ -1,3 +1,4 @@
+/* global Headers, Response */
 import {
   describe, it, expect, afterEach, vi
 } from "vitest";
