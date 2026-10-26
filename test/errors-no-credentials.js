@@ -37,7 +37,7 @@ describe("OAuth2 errors carry no credentials", () => {
   });
 
   it("an http error (400) keeps the request body, headers and URL off the error", async () => {
-    vi.stubGlobal("fetch", vi.fn(async () => new Response('{"error":"invalid_grant"}', { status: 400 })));
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("{\"error\":\"invalid_grant\"}", { status: 400 })));
 
     const error = await oauth2().getToken({ code: CODE, redirect_uri: "http://callback.com" }).catch((e) => e);
 
