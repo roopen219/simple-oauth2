@@ -2,7 +2,9 @@
 import {
   describe, it, expect, afterEach, vi
 } from "vitest";
-import { AuthorizationCode } from "../index.js";
+import {
+  AuthorizationCode, ClientCredentials, KekaApiCode, ResourceOwnerPassword
+} from "../index.js";
 import { createModuleConfig } from "./_module-config.js";
 
 const SECRET = "the-client-secret-value";
@@ -59,5 +61,36 @@ describe("OAuth2 errors carry no credentials", () => {
     expect(text).not.toContain(TOKEN);
     expect(text).not.toContain(SECRET);
     expect(text).not.toContain(CODE);
+  });
+});
+
+describe("Refused options carry no values", () => {
+  const grantTypes = [AuthorizationCode, ClientCredentials, KekaApiCode, ResourceOwnerPassword];
+  const refuse = (GrantType, config) => {
+    try {
+      return new GrantType(createModuleConfig(config));
+    } catch (error) {
+      return error;
+    }
+  };
+
+  it("a client secret with a line break is named, not quoted", () => {
+    grantTypes.forEach((GrantType) => {
+      const error = refuse(GrantType, { client: { secret: `${SECRET}\n` } });
+
+      expect(error.message).toBe("Invalid options provided to simple-oauth2 \"client.secret\" must contain only printable ASCII characters");
+      expect(errorText(error)).not.toContain(SECRET);
+    });
+  });
+
+  it("another refused option leaves the options, secret included, off the error", () => {
+    grantTypes.forEach((GrantType) => {
+      const error = refuse(GrantType, { client: { secret: SECRET }, auth: { tokenHost: "not-a-uri" } });
+
+      expect(error.message).toBe("Invalid options provided to simple-oauth2 \"auth.tokenHost\" must be a valid uri with a scheme matching the http|https pattern");
+      const text = errorText(error);
+      expect(text).not.toContain(SECRET);
+      expect(text).not.toContain("not-a-uri");
+    });
   });
 });
